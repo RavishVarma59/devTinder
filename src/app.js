@@ -2,26 +2,24 @@ const express = require('express');
 
 const app = express();
 
-// app.use('Route', [RH , RH2], RH3, RH4);
+// this get request will not be executed when we use /xyz rout with get method
+// app.get('/', (req, res,next) => {
+//     console.log("Middleware 1");
+//     next();
+// });
 
-app.use('/user',
-[(req,res,next)=>
-    {
-    console.log("middleware is running");
+app.use('/',(req, res,next)=>{
+    console.log("Middleware 1");
     next();
-}, (req, res,next) => {
-    console.log("this is the first middleware");
-    next();
-}], (req, res,next) => {
-    console.log("this is the second middleware");
-    next();
-}, (req, res,next) => {
-    console.log("this is the third middleware");
+    // res.send("Hello from Middleware 1");
+})
+
+app.get('/user', (req,res,next)=>{
+    console.log("Middleware 2");
     next();
 }, (req, res) => {
-    console.log("this is the fourth middleware");
-    res.send("this is the 4th middleware response");
-});
+    res.send("User route");
+}); 
 
 
 app.listen(7777,()=>{
