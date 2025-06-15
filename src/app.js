@@ -1,26 +1,28 @@
 const express = require('express');
 
+
 const app = express();
+const {authAdmin , userAdmin}  = require('./middleware/auth');
 
-// this get request will not be executed when we use /xyz rout with get method
-// app.get('/', (req, res,next) => {
-//     console.log("Middleware 1");
-//     next();
-// });
+app.use('/admin', authAdmin );
 
-app.use('/',(req, res,next)=>{
-    console.log("Middleware 1");
-    next();
-    // res.send("Hello from Middleware 1");
+app.get('/admin/getData', (req, res) => {
+    res.send("Admin data fetched successfully");    
+});
+
+app.delete('/admin/deleteData', (req, res) => {
+    res.send("Admin data deleted successfully");
+});
+
+// user auth middleware in same line of request handler 
+app.get ('/user/getData', userAdmin, (req, res ) => {
+    res.send("User data fetched successfully");
 })
 
-app.get('/user', (req,res,next)=>{
-    console.log("Middleware 2");
-    next();
-}, (req, res) => {
-    res.send("User route");
-}); 
-
+// user auth will not required when user login
+app.post('/user/login', (req, res) => {
+    res.send("User login successfully");
+});
 
 app.listen(7777,()=>{
     console.log("app is listening on 7777 port number .....");
