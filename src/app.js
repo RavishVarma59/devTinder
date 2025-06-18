@@ -6,6 +6,34 @@ const app = express();
 
 app.use(express.json());
 
+//delete the user 
+app.delete('/user',async (req,res) =>{
+    const id = req.body.id;
+    try {
+        const deletedUser = await User.findByIdAndDelete(id);
+        // await User.deleteOne({
+        //     firstName : 'virat'
+        // })
+        res.send("user deleted successfully");
+    } catch (error) {
+        res.status(400).send("something went wrong");
+    }
+})
+
+//update the user
+app.patch('/user', async (req, res) => {
+    const id = req.body.id;
+    const userObj = req.body;
+    try {
+        const updatedUser = await User.findByIdAndUpdate(id,userObj);
+        res.send("user updated successfully");
+
+    } catch (error) {
+        
+        res.status(400).send("something went wrong")
+    }
+})
+// find user by id
 app.get('/user',async (req,res) => {
     const userId = req.body.email
 
@@ -37,6 +65,7 @@ app.get('/feed', async (req,res) => {
     }}
 })
 
+// signup user and post that data into data base
 app.post('/signup', async (req, res) => {
 
     // console.log(req.body);
@@ -52,7 +81,7 @@ app.post('/signup', async (req, res) => {
 });
 
 
-
+// connecting to database and start listning request
 connectDb().then(()=>{
     console.log("Database connected successfully");
     app.listen(7777,()=>{
