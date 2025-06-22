@@ -29,10 +29,22 @@ app.delete('/user',async (req,res) =>{
 
 //update the user
 app.patch('/user', async (req, res) => {
-    const id = req.body.id;
+    const id = req.body.userId;
     const userObj = req.body;
     try {
-        const updatedUser = await User.findByIdAndUpdate(id,userObj);
+        const ALLOWED_DATA = ['userId','firstName','lastName','gender','age','password','skills'];
+        const isUpdateAllowed = Object.keys(userObj).every( k => ALLOWED_DATA.includes(k));
+
+        if(!isUpdateAllowed){
+            throw new Error("Can't update Data");
+        }
+        const updatedUser = await User.findByIdAndUpdate(id,userObj, 
+             {
+                returnDocument:'before',
+                runValidators: true
+             });
+
+        console.log(updatedUser)
         res.send("user updated successfully");
 
     } catch (err) {
@@ -75,9 +87,16 @@ app.get('/feed', async (req,res) => {
 app.post('/signup', async (req, res) => {
 
     // console.log(req.body);
+    const userObj = req.body;
     const user = new User(req.body);
 
     try {
+        const ALLOWED_DATA = ['userId','firstName','email','lastName','gender','age','password','skills'];
+        const isUpdateAllowed = Object.keys(userObj).every( k => ALLOWED_DATA.includes(k));
+
+        if(!isUpdateAllowed){
+            throw new Error("Can't add user");
+        }
         await user.save();
         res.send("User added successfully");
     } catch (err) {

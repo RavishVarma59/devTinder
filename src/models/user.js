@@ -35,7 +35,16 @@ const userSchema = new mongoose.Schema({
             },
             message: props => `${props.value} is not a valid gender`
         }
+    },
+skills: {
+    type: [String],
+    validate: {
+        validator: function (arr) {
+            return arr.length <= 10;
+        },
+        message: props => `Skills array cannot have more than 10 items (got ${props.value.length})`
     }
+}
 }, {
     timestamps: true
 });
