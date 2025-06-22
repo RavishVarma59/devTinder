@@ -5,6 +5,13 @@ const User = require('./models/user');
 const app = express();
 
 app.use(express.json());
+// Ensure indexes are created
+User.init().then(() => {
+    console.log("Indexes ensured for User schema");
+}).catch((err) => {
+    console.error("Failed to create indexes:", err.message);
+});
+
 
 //delete the user 
 app.delete('/user',async (req,res) =>{
@@ -15,8 +22,8 @@ app.delete('/user',async (req,res) =>{
         //     firstName : 'virat'
         // })
         res.send("user deleted successfully");
-    } catch (error) {
-        res.status(400).send("something went wrong");
+    } catch (err) {
+        res.status(400).send("Error while adding user: " + err.message);
     }
 })
 
@@ -28,12 +35,11 @@ app.patch('/user', async (req, res) => {
         const updatedUser = await User.findByIdAndUpdate(id,userObj);
         res.send("user updated successfully");
 
-    } catch (error) {
-        
-        res.status(400).send("something went wrong")
+    } catch (err) {
+        res.status(400).send("Error while adding user: " + err.message);
     }
 })
-// find user by id
+// find user by email id
 app.get('/user',async (req,res) => {
     const userId = req.body.email
 
@@ -46,9 +52,9 @@ app.get('/user',async (req,res) => {
         } else {
             res.status(404).send("user not found");
         }
-    } catch {(err) => {
-        res.status(400).send("something went wrong");
-    }}
+    } catch (err) {
+        res.status(400).send("Error while adding user: " + err.message);
+    }
 });
 
 // get all user to feed the data to signup user
@@ -60,9 +66,9 @@ app.get('/feed', async (req,res) => {
         } else {
             res.status(404).send("user not found");
         }
-    } catch {(err) => {
-        res.status(400).send("something went wrong");
-    }}
+    } catch (err) {
+        res.status(400).send("Error while adding user: " + err.message);
+    }
 })
 
 // signup user and post that data into data base
@@ -74,10 +80,9 @@ app.post('/signup', async (req, res) => {
     try {
         await user.save();
         res.send("User added successfully");
-    } catch {(err) => {
-        res.send("Error while adding user");
-    }};
-
+    } catch (err) {
+        res.status(400).send("Error while adding user: " + err.message);
+    }
 });
 
 
