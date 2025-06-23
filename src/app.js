@@ -28,11 +28,12 @@ app.delete('/user',async (req,res) =>{
 })
 
 //update the user
-app.patch('/user', async (req, res) => {
-    const id = req.body.userId;
+app.patch('/user/:userId', async (req, res) => {
+    const id = req.params.userId;
     const userObj = req.body;
+    console.log(id)
     try {
-        const ALLOWED_DATA = ['userId','firstName','lastName','gender','age','password','skills'];
+        const ALLOWED_DATA = ['firstName','lastName','gender','age','password','skills'];
         const isUpdateAllowed = Object.keys(userObj).every( k => ALLOWED_DATA.includes(k));
 
         if(!isUpdateAllowed){

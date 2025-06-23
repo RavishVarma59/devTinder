@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const validator = require('validator');
 
 const userSchema = new mongoose.Schema({
     firstName: {
@@ -17,11 +18,21 @@ const userSchema = new mongoose.Schema({
         lowercase: true, // convert to lowercase before saving
         required : true,
         unique: true,
-        trim: true
+        trim: true,
+        validate(value){
+            if(!validator.isEmail(value)){
+                throw new Error("Invalid Email Entered !");
+            }
+        },
     },
     password: {
         type: String,
-        required: true
+        required: true,
+        validate(value){
+            if(!validator.isStrongPassword(value)){
+                throw new Error("Please Enter Strong password !");
+            }
+        },
     },
     age: {
         type: Number,
@@ -36,15 +47,29 @@ const userSchema = new mongoose.Schema({
             message: props => `${props.value} is not a valid gender`
         }
     },
-skills: {
-    type: [String],
-    validate: {
-        validator: function (arr) {
-            return arr.length <= 10;
+    about : {
+        type : String,
+        default : "about "
+    },
+    photoUrl : {
+        type : String,
+        default : "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSb51ZwKCKqU4ZrB9cfaUNclbeRiC-V-KZsfQ&s",
+        validate(value){
+            if(!validator.isURL(value)){
+                throw new Error("Enter a valid photo url");
+            }
         },
-        message: props => `Skills array cannot have more than 10 items (got ${props.value.length})`
+        
+    },
+    skills: {
+        type: [String],
+        validate: {
+            validator: function (arr) {
+                return arr.length <= 10;
+            },
+            message: props => `Skills array cannot have more than 10 items (got ${props.value.length})`
+        }
     }
-}
 }, {
     timestamps: true
 });
