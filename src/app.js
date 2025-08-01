@@ -1,6 +1,8 @@
 const express = require('express');
 const connectDb = require('./config/database');
 const User = require('./models/user');
+const Bcrypt = require('bcrypt')
+const {ValidateReqData} = require('./utils/validators');
 
 const app = express();
 
@@ -87,23 +89,64 @@ app.get('/feed', async (req,res) => {
 // signup user and post that data into data base
 app.post('/signup', async (req, res) => {
 
-    // console.log(req.body);
-    const userObj = req.body;
-    const user = new User(req.body);
+    const {firstName, lastName, password, email, gender, age} = req.body;
 
     try {
-        const ALLOWED_DATA = ['userId','firstName','email','lastName','gender','age','password','skills'];
-        const isUpdateAllowed = Object.keys(userObj).every( k => ALLOWED_DATA.includes(k));
+        //Validate data
+        ValidateReqData(req.body);
 
-        if(!isUpdateAllowed){
-            throw new Error("Can't add user");
-        }
+        //encrypt the data
+        const hashPassword = await Bcrypt.hash(password , 10);
+
+        console.log(hashPassword);
+
+        // console.log(req.body);
+        const userObj = req.body;
+        const user = new User({
+            firstName,
+            lastName,
+            password : hashPassword,
+            gender,
+            age,
+            email
+        });
+        // const ALLOWED_DATA = ['userId','firstName','email','lastName','gender','age','password','skills'];
+        // const isUpdateAllowed = Object.keys(userObj).every( k => ALLOWED_DATA.includes(k));
+
+        // if(!isUpdateAllowed){
+        //     throw new Error("Can't add user");
+        // }
         await user.save();
         res.send("User added successfully");
     } catch (err) {
         res.status(400).send("Error while adding user: " + err.message);
     }
 });
+
+//login user
+app.post('/login', async (req, res) => {
+    try {
+        const {email, password} = req.body;
+
+        const user = await User.findOne({email : email});
+
+        if(!user){
+            throw new Error("invalid Credential");
+        }
+
+        const isCorrectPass = await Bcrypt.compare(password, user.password);
+
+        if(!isCorrectPass){
+            throw new Error("invalid credential");
+        }
+
+        res.send("login successfully !");
+
+        
+    } catch (error) {
+        res.status(400).send("error : " + error.message);
+    }
+})
 
 
 // connecting to database and start listning request
