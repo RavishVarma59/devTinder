@@ -56,15 +56,13 @@ app.post('/login', async (req, res) => {
             throw new Error("invalid Credential");
         }
 
-        const isCorrectPass = await Bcrypt.compare(password, user.password);
+        const isCorrectPass = await user.velidateUserPassword(password);
         if(!isCorrectPass){
             throw new Error("invalid credential");
         }
 
         //Generate JWT token
-        const token = await jwt.sign({id: user._id}, "DEV@Tinder",{
-            expiresIn : '7d'
-        });
+        const token = await user.getJWT();
 
         res.cookie('TOKEN', token, {
             expires: new Date(Date.now() + (7 * 24 * 60 * 60 * 1000)) // cookie will be removed after 8 hours
