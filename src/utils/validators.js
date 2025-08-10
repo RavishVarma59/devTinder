@@ -16,6 +16,18 @@ function ValidateReqData(req){
     }
 }
 
+function validateUserProfileDataForEdit(req){
+    const profileEditReq  = req?.body;
+    const allowedProfileEdit = ['firstName', 'lastName', 'age', 'gender', 'about', 'skills', 'email','photoUrl'];
+
+    const isAllowedProfileEdit = Object.keys(profileEditReq).every(key => allowedProfileEdit.includes(key));
+    
+    if(!isAllowedProfileEdit){
+        throw new Error("Edit not allowed !");
+    }
+}
+
 module.exports = {
-    ValidateReqData
+    ValidateReqData,
+    validateUserProfileDataForEdit
 }
