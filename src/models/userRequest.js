@@ -1,20 +1,40 @@
 const mongoose = require('mongoose');
 
 
-const userSchema = new mongoose.Schema({
-  senderUserId : {
-        type: Number | String,
-        required: true
+const userRequestSchema = new mongoose.Schema({
+  fromUserId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true
   },
-  recUserId : {
-    type : Number | String,
-    required : true
+  toUserId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true
   },
-  status : {
-    type : String,
-    
+  status: {
+    type: String,
+    required : true,
+    enum: {
+      values: ['accepted', 'rejected', 'interested', 'ignore'], // Allowed statuses
+      message: '{VALUE} is not a valid status.' // Custom error message
+    }
   },
-  
+
 }, {
-    timestamps: true
+  timestamps: true
 });
+
+userRequestSchema.pre("save", async function(next) {
+      const user = this;
+      if(user.fromUserId.equals(user.toUserId)){
+        throw new Error("Can't send Request to self !");
+      }
+      next();
+});
+
+userRequestSchema.index({fromUserId : 1, toUserId : 1});
+
+
+const UserRequest = mongoose.model("UserRequest",userRequestSchema);
+
+
+module.exports = UserRequest;
