@@ -49,4 +49,28 @@ requestRouter.post('/request/send/:status/:userId', userAuth, async (req, res) =
 
 });
 
+requestRouter.post('/request/review/:status/:reqUserId', userAuth, async (req, res) => {
+    try {
+        const {status, reqUserId } = req.params;
+        const toUser = req.user;
+
+        //validate status
+        //validate logged in user
+        // check incomming req is valid ( status : interested, _id: requserid, touserid: loggedinuserid)
+        //
+
+        const allowedStatus = ['accepted','rejected'];
+        if(!allowedStatus.includes(status)){
+            return res.status(400).send("status not valid");
+        }
+
+
+
+    } catch (error) {
+        res.status(400).json({
+            message : "error while updating request !"
+        });
+    }
+})
+
 module.exports = requestRouter;
