@@ -49,26 +49,36 @@ requestRouter.post('/request/send/:status/:userId', userAuth, async (req, res) =
 
 });
 
-requestRouter.post('/request/review/:status/:reqUserId', userAuth, async (req, res) => {
+requestRouter.post('/request/review/:status/:connectionReqUserId', userAuth, async (req, res) => {
     try {
-        const {status, reqUserId } = req.params;
-        const toUser = req.user;
-
-        //validate status
-        //validate logged in user
-        // check incomming req is valid ( status : interested, _id: requserid, touserid: loggedinuserid)
-        //
+        const {status, connectionReqUserId } = req.params;
+        const loggedInUser = req.user;
 
         const allowedStatus = ['accepted','rejected'];
         if(!allowedStatus.includes(status)){
-            return res.status(400).send("status not valid");
+            return res.status(400).send("status not Allowed !");
         }
 
+        const connectionRequest = await UserRequest.findOne({
+            status : 'interested',
+            _id : connectionReqUserId,
+            toUserId : loggedInUser._id
+        });
+        if(!connectionRequest){
+            throw new Error("Invalid Connection Request")
+        }
 
+        connectionRequest.status = status;
+        await connectionRequest.save();
+
+        res.json({
+            message : `${loggedInUser.firstName} ${status} the request`,
+            data : connectionRequest
+        })
 
     } catch (error) {
         res.status(400).json({
-            message : "error while updating request !"
+            message : "error while updating request ! Error : " + error.message
         });
     }
 })
