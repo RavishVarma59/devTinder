@@ -5,6 +5,7 @@ const cookieParser = require('cookie-parser');
 const authRouter = require('./routers/auth');
 const profileRouter = require('./routers/profile');
 const requestRouter = require('./routers/userRequest');
+const userRouter = require('./routers/user');
 
 const app = express();
 
@@ -14,6 +15,7 @@ app.use(cookieParser());
 app.use('/',authRouter);
 app.use('/',profileRouter);
 app.use('/',requestRouter);
+app.use('/',userRouter);
 
 // connecting to database and start listning request
 connectDb().then(()=>{
