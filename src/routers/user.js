@@ -1,6 +1,7 @@
 const express = require('express');
 const { userAuth } = require('../middleware/auth');
 const UserRequest = require('../models/userRequest');
+const User = require('../models/user');
 const userRouter = express.Router();
 
 const REQ_SENDER_INFO = ['firstName','lastName','age','gender','about','photoUrl','skills'];
@@ -52,6 +53,37 @@ userRouter.get('/user/connections', userAuth , async (req , res) => {
     } catch (err) {
         res.status(400).json({
             message : "ERROR : "+err.message
+        })
+    }
+});
+
+userRouter.get('/user/feed', userAuth, async (req, res) => {
+    try {
+        const loggedInUser = req.user;
+
+        const intractedConnection = await UserRequest.find({
+            $or :[{toUserId: loggedInUser._id }, {fromUserId : loggedInUser._id}]
+        }).select(['toUserId','fromUserId']);
+
+        let hideUserIds = new Set();
+        intractedConnection.forEach( row => {
+            hideUserIds.add(row.fromUserId.toString());
+            hideUserIds.add(row.toUserId.toString());
+        });
+        const feedUsers = await User.find({
+            $and : [
+                { _id : { $nin : Array.from(hideUserIds)}},
+                { _id : { $ne : loggedInUser._id}}
+            ]
+        }).select(REQ_SENDER_INFO);
+
+        res.send({
+            data : feedUsers
+        })
+        
+    } catch (err) {
+        res.status(400).json({
+            message : err.message
         })
     }
 })
