@@ -60,6 +60,11 @@ userRouter.get('/user/connections', userAuth , async (req , res) => {
 userRouter.get('/user/feed', userAuth, async (req, res) => {
     try {
         const loggedInUser = req.user;
+        const pageNo = parseInt(req.query.pageNo) || 1;
+        let perPageRecords = parseInt(req.query.perPageRecords) || 10;
+
+        perPageRecords = perPageRecords > 50 ? 50 : perPageRecords;
+        const skip = (pageNo - 1)*perPageRecords;
 
         const intractedConnection = await UserRequest.find({
             $or :[{toUserId: loggedInUser._id }, {fromUserId : loggedInUser._id}]
@@ -75,7 +80,10 @@ userRouter.get('/user/feed', userAuth, async (req, res) => {
                 { _id : { $nin : Array.from(hideUserIds)}},
                 { _id : { $ne : loggedInUser._id}}
             ]
-        }).select(REQ_SENDER_INFO);
+        })
+        .skip(skip)
+        .limit(perPageRecords)
+        .select(REQ_SENDER_INFO);
 
         res.send({
             data : feedUsers
