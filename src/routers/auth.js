@@ -57,7 +57,7 @@ authRouter.post('/login', async (req, res) => {
 
         
     } catch (error) {
-        res.status(400).send("error : " + error.message);
+        res.status(400).send("Error : " + error.message);
     }
 });
 
@@ -67,6 +67,6 @@ authRouter.post('/logout', async (req, res) => {
             maxAge: 0 // cookie will be removed after 8 hours
         });
 
-        res.send("logOut successfully !");
+        res.send({data : "logOut successfully !"});
 });
 module.exports = authRouter;
