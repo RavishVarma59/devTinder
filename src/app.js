@@ -17,6 +17,14 @@ app.use(cors({
     credentials: true
 }));
 
+app.use((req, res, next) => {
+  res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+  res.setHeader('Pragma', 'no-cache');
+  res.setHeader('Expires', '0');
+  res.setHeader('Surrogate-Control', 'no-store');
+  next();
+});
+
 app.use('/',authRouter);
 app.use('/',profileRouter);
 app.use('/',requestRouter);
