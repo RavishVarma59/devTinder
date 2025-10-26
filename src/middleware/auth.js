@@ -11,7 +11,7 @@ const userAuth = async (req, res, next) => {
            return res.status(401).send("Token not valid !")
         }
 
-        const decodedObj = await jwt.verify(TOKEN, "DEV@Tinder");
+        const decodedObj = await jwt.verify(TOKEN, process.env.JWT_TOKEN);
 
         const { id } = decodedObj;
         const user = await User.findById(id);

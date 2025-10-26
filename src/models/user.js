@@ -37,7 +37,8 @@ const userSchema = new mongoose.Schema({
     },
     age: {
         type: Number,
-        min: [14, 'Must be at least 14, got {VALUE}']
+        min: [14, 'Must be at least 14, got {VALUE}'],
+        max: [80]
     },
     gender: {
         type: String,
@@ -79,7 +80,7 @@ const userSchema = new mongoose.Schema({
 
 userSchema.methods.getJWT = async function () {
     const user = this;
-    const token = await jwt.sign({id: user._id}, "DEV@Tinder",{
+    const token = await jwt.sign({id: user._id}, process.env.JWT_TOKEN,{
                 expiresIn : '7d'
             });
 

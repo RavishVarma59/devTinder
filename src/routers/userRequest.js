@@ -3,6 +3,7 @@ const requestRouter = express.Router();
 const User = require('../models/user');
 const { userAuth } = require('../middleware/auth');
 const UserRequest = require('../models/userRequest');
+const sendEmail = require('../utils/ses-sendEmail')
 
 requestRouter.post('/request/send/:status/:userId', userAuth, async (req, res) => {
     try {
@@ -36,6 +37,13 @@ requestRouter.post('/request/send/:status/:userId', userAuth, async (req, res) =
         });
 
         await userRequest.save()
+
+        // const _sendEmail = await sendEmail.run(
+        //     "Request send Notification",
+        //     req.user.firstName + " Send the Request to "+ isUserExist.firstName
+        // );
+
+        // console.log(_sendEmail);
 
         res.json({
             message : "user send the request successfull !",
