@@ -1,5 +1,7 @@
 require("dotenv").config();
 const express = require('express');
+const {createServer} = require('node:http');
+const {Server}= require('socket.io');
 const connectDb = require('./config/database');
 const cookieParser = require('cookie-parser');
 
@@ -10,6 +12,13 @@ const userRouter = require('./routers/user');
 const cors = require('cors');
 
 const app = express();
+
+const httpServer = createServer(app);
+const io = new Server(httpServer);
+
+io.on('connection',(socket)=>{
+
+})
 
 require("./utils/cronjob");
 
@@ -36,7 +45,7 @@ app.use('/',userRouter);
 // connecting to database and start listning request
 connectDb().then(()=>{
     console.log("Database connected successfully");
-    app.listen(7777,()=>{
+    httpServer.listen(7777,()=>{
         console.log("app is listening on 7777 port number .....");
     });
 }).catch(err =>{
