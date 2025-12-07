@@ -1,7 +1,7 @@
 require("dotenv").config();
 const express = require('express');
 const {createServer} = require('node:http');
-const {Server}= require('socket.io');
+const {connectSocket} = require("./utils/socket")
 const connectDb = require('./config/database');
 const cookieParser = require('cookie-parser');
 
@@ -14,11 +14,7 @@ const cors = require('cors');
 const app = express();
 
 const httpServer = createServer(app);
-const io = new Server(httpServer);
-
-io.on('connection',(socket)=>{
-
-})
+connectSocket(httpServer);
 
 require("./utils/cronjob");
 
