@@ -22,10 +22,8 @@ function connectSocket(httpServer) {
             console.log("receive message : ", text)
             console.log("rec room id : ",roomId)
             let a = "io"
-            io.to(roomId).emit("receiveMessage",{userId,name,a})
-            let b = "socket"
-            socket.to(roomId).emit("receiveMessage",{userId,name,b})
-            // socket.emit("receiveMessage",text)
+            io.to(roomId).emit("receiveMessage",{userId,name,a,text})
+
         })
 
           socket.on("disconnecting", () => {
