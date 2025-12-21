@@ -96,4 +96,23 @@ userRouter.get('/user/feed', userAuth, async (req, res) => {
     }
 })
 
+userRouter.post('/getUserDetails', userAuth, async (req, res) => {
+    try{
+        const userId = req.body.userId;
+        const userDetails =  await User.findById(userId).select(REQ_SENDER_INFO);
+        if(!userDetails){
+            return res.status(404).json({
+                message: "User not found"
+            });
+        }
+        res.json({
+            data : userDetails
+        });
+    } catch(error){
+        res.status(400).json({
+            message: "Error fetching user details: " + error.message
+        });
+    }
+})
+
 module.exports = userRouter;

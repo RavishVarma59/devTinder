@@ -9,6 +9,7 @@ const authRouter = require('./routers/auth');
 const profileRouter = require('./routers/profile');
 const requestRouter = require('./routers/userRequest');
 const userRouter = require('./routers/user');
+const messagegingRouter = require('./routers/messaging');
 const cors = require('cors');
 
 const app = express();
@@ -37,6 +38,7 @@ app.use('/',authRouter);
 app.use('/',profileRouter);
 app.use('/',requestRouter);
 app.use('/',userRouter);
+app.use('/',messagegingRouter);
 
 // connecting to database and start listning request
 connectDb().then(()=>{
