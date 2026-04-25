@@ -3,6 +3,7 @@ const authRouter = express.Router();
 const User = require('../models/user');
 const Bcrypt = require('bcrypt')
 const {ValidateReqData} = require('../utils/validators');
+const isProduction = process.env.NODE_ENV === "production";
 
 // signup user and post that data into data base
 authRouter.post('/signup', async (req, res) => {
@@ -29,6 +30,9 @@ authRouter.post('/signup', async (req, res) => {
         const token = await signUpUser.getJWT();
 
         res.cookie('TOKEN', token, {
+            httpOnly: true,
+            secure: isProduction,                     // HTTPS only in prod
+            sameSite: isProduction ? "none" : "lax", // cross-site only in prod
             expires: new Date(Date.now() + (7 * 24 * 60 * 60 * 1000)) // cookie will be removed after 8 hours
         });
         res.send({
@@ -59,6 +63,9 @@ authRouter.post('/login', async (req, res) => {
         const token = await user.getJWT();
 
         res.cookie('TOKEN', token, {
+            httpOnly: true,
+            secure: isProduction,                     // HTTPS only in prod
+            sameSite: isProduction ? "none" : "lax", // cross-site only in prod
             expires: new Date(Date.now() + (7 * 24 * 60 * 60 * 1000)) // cookie will be removed after 8 hours
         });
 
