@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+const {defaultPhotoUrl} = require("../utils/validators")
 
 const userSchema = new mongoose.Schema({
     firstName: {
@@ -55,7 +56,7 @@ const userSchema = new mongoose.Schema({
     },
     photoUrl : {
         type : String,
-        default : "https://avatar.iran.liara.run/public/boy?username=Ash",
+        default : defaultPhotoUrl,
         validate(value){
             if(!validator.isURL(value)){
                 throw new Error("Enter a valid photo url");
